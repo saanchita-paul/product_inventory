@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import {ref} from "vue";
+import {runInContext as file} from "lodash";
 
 const props = defineProps({ product: Object });
 
@@ -20,8 +22,20 @@ const form = useForm({
     image: null,
 });
 
+const imageError = ref(null);
 const handleFileChange = (event) => {
     form.image = event.target.files[0];
+    imageError.value = null;
+    form.clearErrors('image');
+    if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            imageError.value = "File is too large. Max size is 2MB.";
+            event.target.value = null;
+            form.image = null;
+            return;
+        }
+        form.image = file;
+    }
 };
 
 const submit = () => {

@@ -14,7 +14,6 @@ class ProductService
             $data['image_path'] = $data['image']->store('products', 'public');
         }
 
-        // Remove 'image' key as it's not in the DB columns
         unset($data['image']);
 
         return Product::create($data);
@@ -23,7 +22,7 @@ class ProductService
     public function updateProduct(Product $product, array $data): Product
     {
         if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-            // Delete old image if exists
+
             if ($product->image_path) {
                 Storage::disk('public')->delete($product->image_path);
             }
