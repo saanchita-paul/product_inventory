@@ -75,6 +75,8 @@ php artisan serve
 
 ## Technical Assessment Questions
 1. Laravel 12 & Modern PHP: Dependency Injection vs. Facade
+
+
    **Q: What is the difference between Dependency Injection and using a Facade in Laravel? In which scenario would you prefer using Dependency Injection?**
    - Difference:
         - Dependency Injection (DI) involves passing dependencies (objects/classes) explicitly into a class, usually via the constructor. This makes dependencies visible and the class loosely coupled.
@@ -82,8 +84,10 @@ php artisan serve
 
    - Preference:
         - I prefer Dependency Injection when writing complex business logic, Services, or Controllers that require Unit Testing. DI allows me to easily "mock" or swap out dependencies during tests (e.g., mocking a PaymentService so I don't charge a real credit card during a test). Facades can make testing harder because they rely on global state.
-
+     
 2. Performance: Optimizing for 10,000 Products
+
+
    **Q: In a real-world scenario with 10,000 products, how would you optimize the search query to ensure the page loads quickly?**
 
    1. Database Indexing: The most critical step is to add indexes to the searchable columns in the migration ($table->index(['name', 'sku']);). This changes the database search from a slow full-table scan to a fast lookup.
@@ -95,24 +99,28 @@ php artisan serve
    4. Debouncing: On the frontend, I used lodash. debounce to wait 300ms after the user stops typing before sending the search request, preventing the server from being flooded with queries.
 
 3. Security: CSRF & Inertia.js
+
+
    **Q: How does Laravel's CSRF protection work with Inertia.js, and why is it important for form submissions?**
+ 
+   - How it works: Laravel automatically includes a XSRF-TOKEN cookie in every response. When Inertia (via Axios) makes a request, it reads this cookie and sends it back in the X-XSRF-TOKEN header. Laravel's middleware verifies that the token in the header matches the one in the session.
 
-    - How it works: Laravel automatically includes a XSRF-TOKEN cookie in every response. When Inertia (via Axios) makes a request, it reads this cookie and sends it back in the X-XSRF-TOKEN header. Laravel's middleware verifies that the token in the header matches the one in the session.
-
-    - Importance: It prevents Cross-Site Request Forgery attacks. Without it, a malicious website could force a logged-in user's browser to send a silent POST request to my site (e.g., /products/delete/1) without the user's consent. The token ensures the request actually originated from my application.
+   - Importance: It prevents Cross-Site Request Forgery attacks. Without it, a malicious website could force a logged-in user's browser to send a silent POST request to my site (e.g., /products/delete/1) without the user's consent. The token ensures the request actually originated from my application.
 
 4. Code Structure: The N+1 Query Problem
+
+
    **Q: Explain the N+1 query problem. If each Product belonged to a Category, how would you prevent N+1 issues when loading the list?**
 
-    - Explanation: The N+1 problem happens when code executes 1 query to fetch a list of items (e.g., 10 products), and then executes an additional query inside a loop for every single item to fetch related data (e.g., 10 queries for categories). This results in 11 queries total instead of 2.
+ - Explanation: The N+1 problem happens when code executes 1 query to fetch a list of items (e.g., 10 products), and then executes an additional query inside a loop for every single item to fetch related data (e.g., 10 queries for categories). This results in 11 queries total instead of 2.
 
-    - Prevention: I would use Eager Loading using the with() method.
+ - Prevention: I would use Eager Loading using the with() method.
 
-          - Bad: Product::all() (then accessing $product->category->name in the loop).
+      - Bad: Product::all() (then accessing $product->category->name in the loop).
 
-          - Good: Product::with('category')->get().
+      - Good: Product::with('category')->get().
 
-          - This forces Laravel to fetch all products in Query 1, collect all category IDs, and fetch all matching categories in Query 2, mapping them automatically.
+      - This forces Laravel to fetch all products in Query 1, collect all category IDs, and fetch all matching categories in Query 2, mapping them automatically.
 
 
 ## Features Implemented
