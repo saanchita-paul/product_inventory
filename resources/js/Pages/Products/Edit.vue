@@ -50,6 +50,11 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <div class="max-w-2xl mx-auto p-6">
+            <div>
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 text-left mb-5">
+                    Update Product
+                </h2>
+            </div>
             <Card>
                 <CardHeader>
                     <CardTitle>Edit Product: {{ product.name }}</CardTitle>

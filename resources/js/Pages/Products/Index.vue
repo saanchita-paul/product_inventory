@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue'; // Import Pagination
-import { router } from '@inertiajs/vue3';
+import {Head, router} from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -49,8 +49,14 @@ const executeDelete = () => {
 </script>
 
 <template>
+    <Head title="Product Inventory List" />
     <AuthenticatedLayout>
         <div class="p-6 bg-white shadow rounded-lg space-y-4">
+            <div>
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 text-left">
+                    Product Inventory List
+                </h2>
+            </div>
             <div class="flex justify-between items-center">
                 <Input v-model="search" placeholder="Search by Name or SKU..." class="max-w-sm"/>
                 <Button @click="router.visit(route('products.create'))">Add Product</Button>

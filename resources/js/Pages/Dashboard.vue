@@ -26,6 +26,5 @@ import { Head } from '@inertiajs/vue3';
                 </div>
             </div>
         </div>
-        <Index></Index>
     </AuthenticatedLayout>
 </template>
