@@ -1,59 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Product Inventory System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern Product Inventory Management module built with **Laravel 12**, **Inertia.js**, **Vue.js**, and **ShadCN Vue**. This project demonstrates full-stack CRUD operations, file handling, and responsive UI design.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* **Framework:** Laravel 12
+* **Frontend:** Vue.js 3 (Composition API)
+* **Adapter:** Inertia.js
+* **UI Library:** ShadCN Vue + Tailwind CSS
+* **Database:**  MySQL
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation & Setup
 
-## Learning Laravel
+Follow these steps to get the project running on your local machine.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/saanchita-paul/product_inventory.git
+cd product_inventory
+````
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Backend Dependencies
+```bash
+composer install
+```
 
-## Laravel Sponsors
+### 3. Setup Environment
+Copy the example environment file and generate the application key.
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 4. Configure Database
+By default, this project uses SQLite. If you prefer MySQL, update DB_CONNECTION in your .env file.
 
-### Premium Partners
+### 5. Run Migrations & Seed Data
+This will create the database tables and populate them with 50 dummy products and a test user.
+```bash
+php artisan migrate:fresh --seed
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Test User Login:
+```bash
+Email: test@example.com
+Password: password
+```
 
-## Contributing
+### 6. Link Storage
+Create the symbolic link to allow public access to uploaded images.
+```bash
+php artisan storage:link
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 7. Install Frontend Dependencies & Build
+```bash
+npm install
+npm run build
+```
 
-## Code of Conduct
+### 8. Start the Server
+You can run the development server (keep this terminal open):
+```bash
+npm run dev
+```
+In a separate terminal, serve the Laravel application:
+```bash
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Visit http://localhost:8000 in your browser.**
 
-## Security Vulnerabilities
+## Technical Assessment Questions
+1. Laravel 12 & Modern PHP: Dependency Injection vs. Facade
+   **Q: What is the difference between Dependency Injection and using a Facade in Laravel? In which scenario would you prefer using Dependency Injection?**
+   - Difference:
+        - Dependency Injection (DI) involves passing dependencies (objects/classes) explicitly into a class, usually via the constructor. This makes dependencies visible and the class loosely coupled.
+        - Facades provide a "static" interface to classes available in the application's service container. They offer syntactic sugar (e.g., Route::get()) but hide the actual underlying dependency implementation.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   - Preference:
+        - I prefer Dependency Injection when writing complex business logic, Services, or Controllers that require Unit Testing. DI allows me to easily "mock" or swap out dependencies during tests (e.g., mocking a PaymentService so I don't charge a real credit card during a test). Facades can make testing harder because they rely on global state.
 
-## License
+2. Performance: Optimizing for 10,000 Products
+   **Q: In a real-world scenario with 10,000 products, how would you optimize the search query to ensure the page loads quickly?**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+   1. Database Indexing: The most critical step is to add indexes to the searchable columns in the migration ($table->index(['name', 'sku']);). This changes the database search from a slow full-table scan to a fast lookup.
+
+   2. Select Specific Columns: Instead of Product::all(), I would use select('id', 'name', 'sku', 'price') to fetch only necessary data, reducing memory usage.
+
+   3. Full-Text Search (Laravel Scout): For fuzzy matching (e.g., finding "phone" inside "smartphone") on large datasets, SQL LIKE queries are slow. I would implement Laravel Scout with a driver like Meilisearch or Algolia for optimized, millisecond-speed search results.
+
+   4. Debouncing: On the frontend, I used lodash. debounce to wait 300ms after the user stops typing before sending the search request, preventing the server from being flooded with queries.
+
+3. Security: CSRF & Inertia.js
+   **Q: How does Laravel's CSRF protection work with Inertia.js, and why is it important for form submissions?**
+
+    - How it works: Laravel automatically includes a XSRF-TOKEN cookie in every response. When Inertia (via Axios) makes a request, it reads this cookie and sends it back in the X-XSRF-TOKEN header. Laravel's middleware verifies that the token in the header matches the one in the session.
+
+    - Importance: It prevents Cross-Site Request Forgery attacks. Without it, a malicious website could force a logged-in user's browser to send a silent POST request to my site (e.g., /products/delete/1) without the user's consent. The token ensures the request actually originated from my application.
+
+4. Code Structure: The N+1 Query Problem
+   **Q: Explain the N+1 query problem. If each Product belonged to a Category, how would you prevent N+1 issues when loading the list?**
+
+    - Explanation: The N+1 problem happens when code executes 1 query to fetch a list of items (e.g., 10 products), and then executes an additional query inside a loop for every single item to fetch related data (e.g., 10 queries for categories). This results in 11 queries total instead of 2.
+
+    - Prevention: I would use Eager Loading using the with() method.
+
+          - Bad: Product::all() (then accessing $product->category->name in the loop).
+
+          - Good: Product::with('category')->get().
+
+          - This forces Laravel to fetch all products in Query 1, collect all category IDs, and fetch all matching categories in Query 2, mapping them automatically.
+
+
+## Features Implemented
+
+- CRUD Operations: Create, Read, Update, Delete products.
+
+- Image Uploads: Handled via a dedicated Service class with server-side storage.
+
+- Search & Pagination: Real-time search by Name/SKU and paginated results.
+
+- Validation: Strict backend validation (Unique SKU, Max file size, etc.) + Client-side file size checks.
+
+- Soft Deletes: Products are archived instead of permanently deleted.
+
+- Modern UI: Built with ShadCN Vue components (Dialogs, Tables, Dropdowns).
